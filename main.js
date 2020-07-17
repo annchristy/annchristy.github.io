@@ -1,47 +1,86 @@
-// Modules to control application life and create native browser window
-const {app, BrowserWindow} = require('electron')
-const path = require('path')
+// UI elements.
+const deviceNameLabel = document.getElementById('device-name');
+const connectButton = document.getElementById('connect');
+const disconnectButton = document.getElementById('disconnect');
+const terminalContainer = document.getElementById('terminal');
+const sendForm = document.getElementById('send-form');
+const inputField = document.getElementById('input');
 
-app
-  .commandLine
-  .appendSwitch('enable-web-bluetooth', true);
+// Helpers.
+const defaultDeviceName = 'Babel Glove';
+const terminalAutoScrollingLimit = terminalContainer.offsetHeight / 2;
+let isTerminalAutoScrolling = true;
 
-function createWindow () {
-  // Create the browser window.
-  const mainWindow = new BrowserWindow({
-    width: 1024,
-    height: 768,
-    webPreferences: {
-      preload: path.join(__dirname, 'preload.js')
-    }
-  })
+const scrollElement = (element) => {
+  const scrollTop = element.scrollHeight - element.offsetHeight;
 
-  // and load the index.html of the app.
-  mainWindow.loadFile('index.html')
+  if (scrollTop > 0) {
+    element.scrollTop = scrollTop;
+  }
+};
 
-  // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
-}
+const logToTerminal = (message, type = '') => {
+  terminalContainer.insertAdjacentHTML('beforeend',
+      `<div${type && ` class="${type}"`}>${message}</div>`);
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.whenReady().then(() => {
-  createWindow()
-  
-  app.on('activate', function () {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
-  })
-})
+  if (isTerminalAutoScrolling) {
+    scrollElement(terminalContainer);
+  }
+};
 
-// Quit when all windows are closed.
-app.on('window-all-closed', function () {
-  // On macOS it is common for applications and their menu bar
-  // to stay active until the user quits explicitly with Cmd + Q
-  if (process.platform !== 'darwin') app.quit()
-})
+// Obtain configured instance.
+const terminal = new BluetoothTerminal();
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
+// Override `receive` method to log incoming data to the terminal.
+terminal.receive = function(data) {
+  logToTerminal(data, 'in');
+};
+
+// Override default log method to output messages to the terminal and console.
+terminal._log = function(...messages) {
+  // We can't use `super._log()` here.
+  messages.forEach((message) => {
+    logToTerminal(message);
+    console.log(message); // eslint-disable-line no-console
+  });
+};
+
+// Implement own send function to log outcoming data to the terminal.
+const send = (data) => {
+  terminal.send(data).
+      then(() => logToTerminal(data, 'out')).
+      catch((error) => logToTerminal(error));
+};
+
+// Bind event listeners to the UI elements.
+connectButton.addEventListener('click', () => {
+  terminal.connect().
+      then(() => {
+        deviceNameLabel.textContent = terminal.getDeviceName() ?
+            terminal.getDeviceName() : defaultDeviceName;
+      });
+});
+
+disconnectButton.addEventListener('click', () => {
+  terminal.disconnect();
+  deviceNameLabel.textContent = defaultDeviceName;
+});
+
+sendForm.addEventListener('submit', (event) => {
+  event.preventDefault();
+
+  send(inputField.value);
+
+  inputField.value = '';
+  inputField.focus();
+});
+/*
+// Switch terminal auto scrolling if it scrolls out of bottom.
+terminalContainer.addEventListener('scroll', () => {
+  const scrollTopOffset = terminalContainer.scrollHeight -
+      terminalContainer.offsetHeight - terminalAutoScrollingLimit;
+
+  isTerminalAutoScrolling = (scrollTopOffset < terminalContainer.scrollTop);
+});
+
+*/
