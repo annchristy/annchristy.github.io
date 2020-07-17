@@ -1,33 +1,87 @@
 <!DOCTYPE html>
-<html lang ="en">
-  <head>
-    <meta charset="UTF-8">
-    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
-    <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+<html lang="en">
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="msapplication-TileColor" content="#2196f3">
+    <meta name="msapplication-config" content="browserconfig.xml">
+    <meta name="theme-color" content="#2196f3">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="msapplication-starturl" content="./">
+    <meta name="description"
+          content="Progressive Web Application for serial communication with your own Bluetooth Low Energy (Smart) devices">
+
     <title>Babel Glove</title>
-    <link rel="stylesheet" href="style.css">
-  </head>
-  <body>
-    <!-- add image here -->
-    <h1>Hello! Thank you for using Babel Glove.</h1>
-    <main>
-         <center> 
-          <button class = "btn default">Library</button>
-          <button class = "btn default">Connect to Glove</button>
-          <button class = "btn default">Quiz</button>
-        </center>
-          
-          <center><textarea rows="10" cols="30"></textarea></center>
 
-    </main>
-    <footer>
-      This application was built using Node.js <span id="node-version"></span>,
-      Chromium <span id="chrome-version"></span>,
-      and Electron <span id="electron-version"></span>.
-    </footer>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
+    <link rel="mask-icon" href="icons/safari-pinned-tab.svg" color="#2196f3">
+    <link rel="shortcut icon" href="icons/favicon.ico">
 
-    <!-- You can also require other files to run in this process -->
-    <script src="./renderer.js"></script>
-  </body>
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="css/normalize.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
+
+</head>
+<body>
+
+    <div class="toolbar">
+
+        <div id="device-name" class="name">Babel Glove</div>
+
+        <div class="buttons">
+
+            <button id="connect" type="button" aria-label="Connect">
+               Connect
+            </button>
+
+            <button id="disconnect" type="button" aria-label="Disconnect">
+               Disconnect
+            </button>
+
+        </div>
+
+    </div>
+
+    <div class="app">
+        <div class = "box">
+            <center>
+                <h1>Hello! Thank you for using Babel Glove.</h1>
+                <textarea rows="10" cols="30"></textarea>
+            </center>
+        </div>
+    </div>
+
+    <div id="terminal" class="terminal"></div>
+
+    <div class = "dataBox">
+        <left>
+            <!--
+            <li class="data">Accelerometer X data: <span class="accelerometer-x-data"></span></li>
+            <li class="data">Accelerometer Y data: <span class="accelerometer-y-data"></span></li>
+            <li class="data">Accelerometer Z data: <span class="accelerometer-z-data"></span></li>
+            <li class="data">Gyroscope X data: <span class="gyroscope-x-data"></span></li>
+            <li class="data">Gyroscope Y data: <span class="gyroscope-y-data"></span></li>
+            <li class="data">Gyroscope Z data: <span class="gyroscope-z-data"></span></li>
+            <li class="data">Flex Sensor 1 data: <span class="flex-1-data"></span></li>
+            <li class="data">Flex Sensor 2 data: <span class="flex-2-data"></span></li>
+            <li class="data">Flex Sensor 3 data: <span class="flex-3-data"></span></li>
+            <li class="data">Flex Sensor 4 data: <span class="flex-4-data"></span></li>
+            <li class="data">Flex Sensor 5 data: <span class="flex-5-data"></span></li>
+            -->
+            
+        </left>
+      
+    </div>
+
+    <script src="js/BluetoothTerminal.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/companion.js" data-service-worker="sw.js"></script>
+
+</body>
 </html>
