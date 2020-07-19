@@ -356,6 +356,7 @@ class BluetoothTerminal {
 
         if (data) {
           this.receive(data);
+           document.getElementById("mainTextArea").value = data;
         }
       } else {
         this._receiveBuffer += c;
